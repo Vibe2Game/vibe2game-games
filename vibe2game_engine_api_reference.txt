@@ -1,0 +1,206 @@
+
+/*Vibe2Game engine API reference v1.22*/
+
+/*Note: in this API reference, a '[primitive]' parameter can be any of the following types: Sphere, Box, Text*/
+
+#define FLT_EPSILON 0.000001
+#define FLT_MAX 3.402823466e+38f
+#define PI 3.141593
+
+typedef struct {
+   float x;
+   float y;
+   float z;
+   float w;
+} Quaternion;
+
+typedef struct {
+   float x;
+   float y;
+} Vector2;
+
+typedef struct {
+   float x;
+   float y;
+   float z;
+} Vector3;
+
+typedef struct {
+   float x;
+   float y;
+   float z;
+   float w;
+} Vector4;
+
+typedef struct {
+   float r;
+   float g;
+   float b;
+   float a;
+} Color;
+
+typedef int PointLight;
+typedef int Text;
+typedef int Material;
+typedef int Sphere;
+typedef int Box;
+typedef int Cylinder;
+typedef int Spline;
+
+bool Game_IsInitializing(); /*Returns true at the very first game loop. Used to determine when to execute code that initializes the game*/
+float Game_GetTime(); /*Gets the elapsed time, in seconds, since the game was started*/
+float Game_GetTick(); /*Gets the time, in seconds, taken by the previous game loop to execute. Typically used to make quantities, like speed, not influenced by frame rate (example: location = location + speed*Game_GetTick())*/
+
+Randomizer_SetDeterministicSeed(int seed); /*Initializes the deterministic randomizer. Given the seed, ...Deterministic() functions in this API will always produce the same sequence of outputs*/
+
+float Float_ACos(float c);
+float Float_ASin(float s);
+float Float_ATan(float t);
+float Float_ATan2(float y,float x);
+float Float_Cos(float c);
+float Float_Sin(float s);
+float Float_Tan(float t);
+float Float_Pow(float x,float y);
+float Float_Sqrt(float f);
+float Float_Sign(float f);
+float Float_Ceil(float f);
+float Float_Floor(float f);
+float Float_Trunc(float f);
+float Float_Round(float f);
+float Float_Mod(float x,float y); //may not be needed due to supported %
+float Float_Abs(float f);
+float Float_Max(float x,float y);
+float Float_Min(float x,float y);
+float Float_Clamp(float f,float min,float max);
+float Float_Mod(float x,float y);
+float Float_Wrap(float f,float min,float max);
+float Float_Interpolate(float a,float b,float interpolateionFactor);
+float Float_MapRange(float f,float rangeMin,float rangeMax,float mappedMin,float mappedMax,bool clamp); /*Maps a value from one range to another, optionally clamping the result to the target range*/
+float Float_Randomize(float min,float max); /*Randomizes a float value between min and max (inclusive). Output is non-deterministic*/
+float Float_RandomizeDeterministic(float min,float max); /*Randomizes a float value between min and max (inclusive)*/
+
+int Int_Sign(int i);
+int Int_Clamp(int i,int min,int max);
+int Int_Wrap(int i,int min,int max);
+int Int_Randomize(int min,int max); /*Randomizes an integer value between min and max (inclusive). Output is non-deterministic*/
+int Int_RandomizeDeterministic(int min,int max); /*Randomizes an integer value between min and max (inclusive)*/
+
+Quaternion Quaternion_Create(float x,float y,float z,float w); /*Quaternions represent orientations/rotations*/
+Quaternion Quaternion_CreateFromEulerAngles(float xAngleInRadians,float yAngleInRadians,float zAngleInRadians,int rotationsOrderId); /*rotationsOrderId: 0=xyz,1=xzy,2=yxz,3=yzx,4=zxy,5=zyx*/
+Quaternion Quaternion_CreateFromAxisAngle(Vector3 axis,float angleInRadians);
+Quaternion Quaternion_CreateFromDirection(Vector3 direction); /*Creates a quaternion that orients a primitive (or the 'forward' vector created with Vector3_Create(0.0f,0.0f-1.0f)) towards the specified direction*/
+Quaternion Quaternion_Invert(Quaternion q); /*For example, the inverse of a 0.65 radians rotation about the Y axis is a -0.65 radians rotation about the Y axis*/
+Quaternion Quaternion_Multiply(Quaternion qA,Quaternion qB); /*Multiplying two quaternion means adding the two rotations they represent*/
+Quaternion Quaternion_Slerp(Quaternion qA,Quaternion qB,float slerpFactor); /*For 'slerpFactor' values between 0 and 1, returns a rotation interpolated between qA and qB*/
+
+Vector3 Vector2_Create(float x,float y); /*The Vector2 type natively supports arithmetic (+,-,*,/,%) and negation (-) operators. They all operate component-wise and are automatically overloaded to work in combination with the 'float' type*/
+float Vector2_Dot(Vector2 a,Vector2 b);
+Vector2 Vector2_Normalize(Vector2 v);
+float Vector2_Length(Vector2 v);
+float Vector2_Distance(Vector2 a,Vector2 b);
+Vector2 Vector2_Interpolate(Vector2 a,Vector2 b,float interpolateionFactor);
+
+Vector3 Vector3_Create(float x,float y,float z); /*The Vector3 type natively supports arithmetic (+,-,*,/,%) and negation (-) operators. They all operate component-wise and are automatically overloaded to work in combination with the 'float' type*/
+float Vector3_Dot(Vector3 a,Vector3 b);
+Vector3 Vector3_Cross(Vector3 a,Vector3 b);
+Vector3 Vector3_Normalize(Vector3 v);
+float Vector3_Length(Vector3 v);
+float Vector3_Distance(Vector3 a,Vector3 b);
+Vector3 Vector3_Interpolate(Vector3 a,Vector3 b,float interpolateionFactor);
+Vector3 Vector3_RotateWithQuaternion(Vector3 v,Quaternion q);
+
+Vector4 Vector4_Create(float x,float y,float z,float w); /*The Vector4 type natively supports arithmetic (+,-,*,/,%) and negation (-) operators. They all operate component-wise and are automatically overloaded to work in combination with the 'float' type*/
+float Vector4_Dot(Vector4 a,Vector4 b);
+Vector4 Vector4_Normalize(Vector4 v);
+
+Color Color_Create(float r,float g,float b,float a); /*RGBA component values are in the 0.0f-1.0f range*/
+Color Color_Interpolate(Color a,Color b,float interpolateionFactor);
+
+void AmbientLight_Set(Color color);
+
+void Environment_SetGradient(Color horizonColor,Color gradientColor1,Color gradientColor2,Color zenithAndNadirColor,float gradientStop1,float gradientStop2);
+
+PointLight PointLight_Create(float visualProxyRadius); /*If 'visualProxyRadius' is > 0, an un-shaded sphere of the specified radius will be rendered to visualize where the light source is*/
+void PointLight_SetLocation(PointLight pointLight,Vector3 location);
+void PointLight_SetColor(PointLight pointLight,Color color); /*Light color is also typically used to set light intensity (the darker the color, the dimmer the light). Color components greater than one are supported, for overexposure-based effects, like bright flashes, extremely bright light sources etc*/
+void PointLight_SetEmissivityRange(PointLight pointLight,float emissivityRange); /*Emissivity range is the distance at which illumination becomes zero. Note that this is typically used to limit illumination to specific areas, rather than adjusting light intensity*/
+
+Material Material_Create();
+Material_SetColor(Material material,Color color);
+Material_SetGlossiness(Material material,float glossiness); /*Use the following glossiness values as reference: 0.0=toon-like-matte,0.01=dull-rubber,0.025=rubber,0.035=dull-plastic,0.05=matte-plastic,0.1=common-plastic,0.25=glossy-plastic,0.5=polished-plastic,2.5=painted-metal. Glossiness = -1.0 makes the material look un-shaded (can be used to fake glowing objects or distant lights, like stars, without using light sources)*/
+
+Sphere Primitive_CreateSphere(); /*Adds a sphere to the scene (returns a sphere primitive)*/
+bool Primitive_IsSphere(Sphere sphere); /*Typically used to check if the primitive returned by functions like Clicked_GetPrimitive() is a valid Sphere primitive*/
+void Primitive_SetSphereRadius(Sphere sphere,float radius);
+void Primitive_SetSphereShrinking(Sphere sphere,float shrinking); /*Between 0.0 and 1.0 (i.e. scale-down only). Sphere width (X dimension) scaling allows rendering of ellipsoids*/
+void Primitive_SetSphereFlattening(Sphere sphere,float flattening); /*Between 0.0 and 1.0 (i.e. scale-down only). Sphere height (Y dimension) scaling allows rendering of ellipsoids*/
+
+Box Primitive_CreateBox(); /*Adds a box to the scene (returns a Box primitive). Setting the location of a Box means setting the location of the Box center. This is also the 'pivot' used when setting the Box orientation.*/
+bool Primitive_IsBox(Box box); /*Typically used to check if the primitive returned by functions like Clicked_GetPrimitive() is a valid Box primitive*/
+void Primitive_SetBoxDimensions(Box box,Vector3 dimensions); /*The 'dimensions' parameter is a vector of 3 positive values representing the X, Y and Z size of the box*/
+void Primitive_SetBoxCornerRadius(Box box,float cornerRadius); /*A non-zero corner radius make the Box a 'rounded box'*/
+void Primitive_SetBoxFrontShrinking(Box box,float shrinking); /*Between 0.0 and 1.0 (i.e. scale-down only). Width scaling of the Box front face (the -Z side) allows rendering of capped and not capped prisms and pyramids*/
+void Primitive_SetBoxFrontFlattening(Box box,float flattening); /*Between 0.0 and 1.0 (i.e. scale-down only) Height scaling of the Box front face (the -Z side) allows rendering of capped and not capped prisms and pyramids*/
+
+Cylinder Primitive_CreateCylinder(); /*Adds Cylinder to the scene (returns a Cylinder primitive). This is a cylinder aligned with the Z axis. The front cap is towards -Z. Setting the location of a Cylinder means setting the location of the Cylinder center. This is also the 'pivot' used when setting the Cylinder orientation.*/
+bool Primitive_IsCylinder(Cylinder cylinder); /*Typically used to check if the primitive returned by functions like Clicked_GetPrimitive() is a valid Cylinder primitive*/
+void Primitive_SetCylinderLength(Cylinder cylinder,float cylinderLength); /*The distance between the centers of the two spheres representing the Cylinder caps. The total length of the primitive is therefore [cylinderLength + cylinderRadiusA*0.5 + cylinderRadiusB*0.5]*/
+void Primitive_SetCylinderRadii(Cylinder cylinder,float cylinderRadiusA,float cylinderRadiusB); /*Cylinder emispherical caps can be of different radius. The 'cylinderRadiusA' is the radius of back cap (+Z side). The 'cylinderRadiusB' is the radius of front cap (-Z side)*/
+void Primitive_SetCylinderCornerRadius(Cylinder cylinder,float cornerRadius); /*A non-zero corner radius make the Cylinder a 'rounded cylinder'*/
+void Primitive_SetCylinderFlattening(Cylinder cylinder,float flattening); /*Between 0.0 and 1.0 (i.e. scale-down only). Cylinder Y scaling is often used to render object like airplane wings, fish fins etc*/
+
+Text Primitive_CreateText([stringLiteral]); /*The Text primitive is rendered as a 2D box with the specified text inside. The [stringLiteral] parameter must be a literal in quotes, like "hello world". It can however include numerical templates (e.g. "Amount = $(#0.2)" or "Distance is (#5.3) miles" or "Score: (#0.0)") that can then be set by using the Primitive_SetTextNumber() function (to make the previous examples look like: "Amount = $12.50" "Distance is 00012.500 miles" and "Score: 7981)". Setting the location of a Text primitive means setting the location, on screen, of the text box center. For reference, [0.0,0.0,0.0] is the screen center, [-1.0,-1.0,0.0] is the bottom-left corner, [1.0,1.0,0.0] is the top-right corner. The Z coordinate is typically zero. If negative, the text is not rendered (assumed 'behind the camera'). Setting the orientation of a Text primitive (a Quaternion) means setting the text box orientation about the text box center, using only the Z axis orientation of the quaternion*/
+bool Primitive_IsText(Text text); /*Typically used to check if the primitive returned by functions like Clicked_GetPrimitive() is a valid Text primitive*/
+void Primitive_SetTextFont(Text text,int fontId); /*the 'fontId' supported values: 0=Arial,1=Arial Black,2=Brush Script MT,3=Comic Sans MS,4=Courier,5=Courier New,6=Garamond,7=Georgia,8=Gill Sans,9=Helvetica,10=Impact,11=Lucida Console,12=Monaco,13=Palatino,14=Tahoma,15=Times,16=Times New Roman,17=Trebuchet MS,18=Verdana*/
+void Primitive_SetTextWrapping(Text text,bool nowrap);
+void Primitive_SetTextSize(Text text,float width,float heigh); /*Size of the Text item box. A width of 2.0 corresponds to the full display width, a height of 2.0 corresponds to the full display height. For example, to make a text box cover the entire screen except a small margin on all sides, place it at [0,0] and set its size to [1.95,1.95]*/
+void Primitive_SetTextMargin(Text text,float widthMargint,float heightMargin); /*Sets the space between the text box borders and the text inside it*/
+void Primitive_SetTextColor(Text text,Color textColor);
+void Primitive_SetTextBackgroundColor(Text text,Color backgroundColor);
+void Primitive_SetTextCornerRadius(Text text,int cornerRadiusInPixels); /*Sets the radius of the rounded corners of the box surrounding the text. Use zero for sharp corners*/
+void Primitive_SetTextBackdropBlur(Text text,int blurInPixels); /*Typical 'blurInPixels' value is 8. Use zero to disable backdrop blurring effect*/
+void Primitive_SetTextNumber(Text text,int valueId,float value); /*The 'valueId' parameter indicates the numerical template to set, where template 0 is the first template encountered in the string, 1 is the second and so on*/
+
+void Primitive_SetInvisible([primitive] primitive,bool invisible); /*Invisible primitives are not rendered and are ignored for collision detection or ray checking*/
+void Primitive_SetOrientation([primitive] primitive,Quaternion orientation); /*For reference, when the camera has zero rotation, on screen a positive rotation about the Z (depth) axis is anti-clockwise, assuming the quaternion was created with Quaternion_CreateFromEulerAngles(0,0,angleInRadians,0) or with Quaternion_CreateFromAxisAngle(Vector3_Create(0.0f,0.0f,1.0f),angleInRadians)*/
+Quaternion Primitive_GetOrientation([primitive] primitive);
+void Primitive_SetLocation([primitive] primitive,Vector3 location); /*Sets the location of the primitive center*/
+Vector3 Primitive_GetLocation([primitive] primitive);
+void Primitive_SetMaterial(Box/Sphere primitive,Material material); /*For Text, see Primitive_SetTextColor() instead*/
+
+int Clicked_GetPrimitive(); /*Gets the primitive (Sphere, Box, Cylinder) tapped/clicked by the user during the current game loop. An invalid id (-2) is returned if the mouse was not clicked or (-1) if it was clicked but no primitive was hit*/
+Vector3 Clicked_GetLocation(); /*Returns the tapped location on the surface of the primitive (Sphere, Box or Cylinder only) tapped/clicked during the current game loop. Note that the returned location is only valid if Clicked_GetPrimitive() returns a valid Sphere or Box identifier during the current game loop.*/
+Vector3 Clicked_GetNormal(); /*Returns the surface normal at the tapped location on the surface of the primitive (Sphere, Box or Cylinder only) tapped/clicked during the current game loop. Note that the returned normal is only valid if Clicked_GetPrimitive() returns a valid Sphere or Box identifier during the current game loop*/
+
+bool RayCheck(Vector3 rayFrom,Vector3 rayTo,[primitive] primitive); /*Returns true if the line segment between the 'rayFrom' and 'rayTo' locations intersects the specified primitive (Sphere, Box or Cylinder only)*/
+Vector3 RayCheck_GetLocation(); /*If called right after RayCheck() (assuming RayCheck() returned true), returns the location the ray hit the primitive at*/
+Vector3 RayCheck_GetNormal(); /*If called right after RayCheck() (assuming RayCheck() returned true), returns the surface normal at the location the ray hit the primitive at*/
+
+bool Collision_Check([primitive] primitiveA,[primitive] primitiveB,int accuracy); /*Returns true if the two primitives intersect. Low 'accuracy' values may cause some collisions to go un-detected. The larger the 'accuracy' value, the more computationally expensive the function call. Recommended value is 20, but can be raised as needed (sometimes as high as 500 or more) where not missing collisions is critical. An accuracy of zero is used to only check the bounding sphere of the two primitives for collision. This is very fast to process and allows games with hundreds of collision detection queries per game loop to keep an acceptable frame rate*/
+
+bool Mouse_Down(); /*Returns true if the mouse button is pressed*/
+bool Mouse_Click(); /*Returns true if the mouse button was clicked during the current game loop*/
+float Mouse_X(); /*Returns the mouse pointer X location (undefined unless the mouse is currently pressed or being clicked). The value is between -1.0 (left display border) and 1.0 (right display border)*/
+float Mouse_Y(); /*Returns the mouse pointer Y location (undefined unless the mouse is currently pressed or being clicked). The value is between -1.0 (bottom display border) and 1.0 (top display border)*/
+
+void View_SetMode(int modeId); /*modeId=0: default view mode. Makes the camera look at a specified (and usually moving) location while trying to reach a specified (and usually moving) target position in space. modeId=1: auto-orbit view mode. Makes the camera look at a specified location while orbiting (azimuth variation) around it, while optionally also swinging (elevation variation) up and down. modeId=2: orbit view mode. Allows the player to orbit the camera around a specified location while looking at it. When the look-at location is moving (for example a moving vehicle), this view mode is often a better option than mode 0 because the player can use the orbiting functionality to view the tracked subject (and the surroundings) from any angle*/
+void View_SetClipPlanes(float nearClipDistance,float farClipDistance);
+void View_SetFieldOfViewAngle(float fieldOfViewAngleInDegrees);
+void View_InitAutoOrbit(float cameraElevationInDegrees,float cameraAzimuthInDegrees,float cameraDistanceInMeters,float elevationMinInDegrees,float elevationMaxInDegrees,float elevationSpeedInDegreesPerSecond,float azimuthSpeedInDegreesPerSecond); /*Initializes the camera position and the look-at location for the view mode control enabled with View_SetMode(1). Positive elevation values make the camera take the 'lookAtLocation' from above. Positive azimuth values orbit the camera clockwise around the 'lookAtLocation'. The 'elevationMinInDegrees' and 'elevationMaxInDegrees' set the swing range for the elevation ('elevationSpeedInDegreesPerSecond' is the average swing speed).*/
+void View_InitOrbit(float cameraElevationInDegrees,float cameraAzimuthInDegrees,float cameraDistanceInMeters); /*Initializes the camera position and the look-at location for the view mode control enabled with View_SetMode(2). Positive elevation values make the camera take the 'lookAtLocation' from above. Positive azimuth values orbit the camera clockwise around the 'lookAtLocation'*/
+void View_SetTargetOrientation(Quaternion targetOrientation); /*Sets the orientation the camera will try to align to, for the view mode enabled with View_SetMode(0). This function is typically called at every game loop to make the camera orientation align the player-controlled actor (character, vehicle etc). See also View_SetTargetLocationOffset()*/
+void View_SetTargetLocation(Vector3 targetLocation); /*Sets the location the camera will try to reach, for the view mode enabled with View_SetMode(0). This function is typically called at every game loop to make the camera follow the player-controlled actor (character, vehicle etc). See also View_SetTargetLocationOffset()*/
+void View_SetTargetLocationOffset(Vector3 targetLocationOffset); /*The actual location the camera will try to reach is the one set with View_SetTargetLocation() plus the offset set here. Note that this offset is also rotated about the base location with the orientation set with View_SetTargetOrientation()*/
+void View_SetLookAtLocation(Vector3 lookAtLocation); /*Sets the look-at location for the current view mode (see View_SetMode())*/
+void View_SetResponse(float viewAngularResponse,float viewLinearResponse); /*Response values = 1.0 make the camera track the subject (or reach it's intended position) immediately. Zero response means the camera will not move at all. Typical values are 1.0 for angular response and 0.9 for linear response*/
+void View_SetLockCameraRoll(int lockCameraRoll); /*For the view mode enabled with View_SetMode(0), locking the camera roll is used to follow the player-controlled actor like in a typical 3rd person view game*/
+void View_SetZoomSensitivity(float zoomSensitivity); /*Sets the zoom control sensitivity for the view mode control enabled with View_SetMode(2). Default is 5.0. Setting it to zero disables the ability to the zoom the view*/
+Vector3 View_Project3DLocationToScreen(Vector3 location); /*Returns the screen coordinates (.x and .y component of the returned Vector3) of the specified world location. For reference, a returned value of [0.0,0.0,any-value] means screen center, [-1.0,-1.0,any-value] is the bottom-left corner, [1.0,1.0,any-value] is the top-right corner. The .z component of the returned Vector3 is the distance, from the camera, of the original 3d location, with negative values indicating that the 3d location is behind the camera*/
+
+Spline Spline_Create(int controlPointCount); /*A spline is a list of control points defining a path in space. The path is guaranteed to pass through all defined control points*/
+void Spline_SetControlPointLocation(Spline,int controlPointId,Vector3 controlPointLocation); /*Sets the location of a Spline control point. Closed paths must have the first and last control points at exactly the same coordinates*/
+Vector3 Spline_GetControlPointLocation(Spline,int controlPointId); /*Returns the location of a Spline control point*/
+Vector3 Spline_GetLocationAtTime(Spline,float splineTime); /*Returns the location in space of the path at the specified 'time'. Time 0.0 is the beginning of the spline path. Time 1.0 is the end of the spline path. The Vector3 returned by this function is typically used to set the location of an object, to make it follow the Spline path*/
+Quaternion Spline_GetOrientationAtTime(Spline,float splineTime,float tiltFactor,float tiltSmoothness); /*Returns the orientation in space of the path at the specified 'time'. For example, when this orientation is applied to a [0.0,0.0,1.0] Vector3 (using Vector3_RotateWithQuaternion()), the resulting vector indicates the local 'forward' direction of the path at the specified time. If 'tiltFactor' is zero, the path orientation will be such that the [0.0,1.0,0.0] Vector3 will not be altered when the orientation is applied to it. If 'tiltFactor' is non-zero (typically around 0.35), the [0.0,1.0,0.0] Vector3 will be 'tilted', about the local 'forward' direction, towards the inside of a path's curve, in a way similar to how a motorbike tilts on road bends. The 'tiltSmoothness' (typically around 0.5), can be increased if the tilt action is too abrupt, reduced if it's too slow. The Quaternion returned by this function is typically used to set the orientation of an object that follows the path*/
+float Spline_GetLength(Spline); /*Returns the total length of a Spline*/
+
