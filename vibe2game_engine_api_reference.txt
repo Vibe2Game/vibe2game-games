@@ -1,5 +1,5 @@
 
-/*Vibe2Game engine API reference v1.27*/
+/*Vibe2Game engine API reference v1.29*/
 
 /*Note: in this API reference, a '[primitive]' parameter can be any of the following types: Sphere, Box, Text*/
 
@@ -61,6 +61,7 @@ float Float_Cos(float c);
 float Float_Sin(float s);
 float Float_Tan(float t);
 float Float_Pow(float x,float y);
+float Float_Exp(float f);
 float Float_Sqrt(float f);
 float Float_Sign(float f);
 float Float_Ceil(float f);
@@ -113,7 +114,7 @@ Vector4 Vector4_Create(float x,float y,float z,float w); /*The Vector4 type nati
 float Vector4_Dot(Vector4 a,Vector4 b);
 Vector4 Vector4_Normalize(Vector4 v);
 
-Color Color_Create(float r,float g,float b,float a); /*RGBA component values are in the 0.0f-1.0f range*/
+Color Color_Create(float r,float g,float b,float a); /*Component values are in the 0.0f-1.0f range, 4 values in total, for red, green, blue and alpha*/
 Color Color_Interpolate(Color a,Color b,float interpolateionFactor);
 
 void AmbientLight_Set(Color color);
