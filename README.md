@@ -24,4 +24,5 @@ Game templates
 --------------
 
 ShapeAssault-vibe2game.c - basic elements of a rail shooter game
+
 MemoryGame-template-vibe2game.c - basic memory game
