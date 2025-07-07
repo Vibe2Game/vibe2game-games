@@ -82,7 +82,6 @@ Vector3 planetPositions[9];
 Quaternion spaceshipOrientation;
 float planetRadii[9];
 Quaternion targetOrientation;
-Vector3 currentLookAt;
 float prices[144];
 float base_prices[16];
 float distances[81];
@@ -95,6 +94,12 @@ int inventoryTexts[16];
 int balanceText;
 Sphere stars[500];
 Material starMaterials[500];
+int buyButtons[16];
+int sellButtons[16];
+int pressedAction;
+int pressedIndex;
+float pressStartTime;
+float lastActionTime;
 
 void Game_Update() {
    if (Game_IsInitializing()) {
@@ -203,7 +208,7 @@ void Game_Update() {
          }
          Material_SetColor(starMaterials[i], starColor);
          Material_SetGlossiness(starMaterials[i], -1.0f);
-         Primitive_SetSphereRadius(stars[i], 0.1f);
+         Primitive_SetSphereRadius(stars[i], 90.0f);
          Primitive_SetMaterial(stars[i], starMaterials[i]);
          float u = Float_RandomizeDeterministic(-1.0f, 1.0f);
          float v = Float_RandomizeDeterministic(0.0f, 2.0f * PI);
@@ -501,6 +506,7 @@ void Game_Update() {
       dragStartX = 0.0f;
       dragStartAzimuth = 0.0f;
       View_SetMode(2);
+      View_SetResponse(0.7f, 0.7f);
       View_InitOrbit(30.0f, 0.0f, 5.0f);
       View_SetFieldOfViewAngle(60.0f);
       View_SetZoomSensitivity(5.0f);
@@ -513,7 +519,6 @@ void Game_Update() {
       PointLight_SetEmissivityRange(sunLight, 120000.0f);
       spaceshipOrientation = Quaternion_Create(0.0f, 0.0f, 0.0f, 1.0f);
       targetOrientation = Quaternion_Create(0.0f, 0.0f, 0.0f, 1.0f);
-      currentLookAt = spaceshipPosition;
       planetRadii[0] = 6.13f;
       planetRadii[1] = 15.2f;
       planetRadii[2] = 16.0f;
@@ -524,6 +529,28 @@ void Game_Update() {
       planetRadii[7] = 62.24f;
       planetRadii[8] = 3.0f;
       targetPlanet = 2;
+      pressedAction = -1;
+      pressedIndex = -1;
+      pressStartTime = 0.0f;
+      lastActionTime = 0.0f;
+      for(int k=0; k<16; k=k+1) {
+         buyButtons[k] = Primitive_CreateText("BUY ");
+         sellButtons[k] = Primitive_CreateText("SELL");
+         Primitive_SetTextFont(buyButtons[k], 5);
+         Primitive_SetTextSize(buyButtons[k], 0.2f, 0.1f);
+         Primitive_SetTextColor(buyButtons[k], Color_Create(1.0f, 1.0f, 1.0f, 1.0f));
+         Primitive_SetTextBackgroundColor(buyButtons[k], Color_Create(0.0f, 0.0f, 0.0f, 0.5f));
+         Primitive_SetTextCornerRadius(buyButtons[k], 5);
+         Primitive_SetTextBackdropBlur(buyButtons[k], 8);
+         Primitive_SetLocation(buyButtons[k], Vector3_Create(0.0f, 0.0f, -1.0f));
+         Primitive_SetTextFont(sellButtons[k], 5);
+         Primitive_SetTextSize(sellButtons[k], 0.2f, 0.1f);
+         Primitive_SetTextColor(sellButtons[k], Color_Create(1.0f, 1.0f, 1.0f, 1.0f));
+         Primitive_SetTextBackgroundColor(sellButtons[k], Color_Create(0.0f, 0.0f, 0.0f, 0.5f));
+         Primitive_SetTextCornerRadius(sellButtons[k], 5);
+         Primitive_SetTextBackdropBlur(sellButtons[k], 8);
+         Primitive_SetLocation(sellButtons[k], Vector3_Create(0.0f, 0.0f, -1.0f));
+      }
    }
    float deltaTime = Game_GetTick();
    int clickedPrim = Clicked_GetPrimitive();
@@ -542,6 +569,48 @@ void Game_Update() {
             }
          }
       }
+      for(int k=0; k<16; k=k+1) {
+         if (clickedPrim == buyButtons[k]) {
+            if (prices[targetPlanet * 16 + k] > 0.0f && balance >= prices[targetPlanet * 16 + k]) {
+               balance = balance - prices[targetPlanet * 16 + k];
+               inventory[k] = inventory[k] + 1;
+            }
+            pressedAction = 0;
+            pressedIndex = k;
+            pressStartTime = Game_GetTime();
+            lastActionTime = pressStartTime;
+         } else if (clickedPrim == sellButtons[k]) {
+            if (inventory[k] > 0 && prices[targetPlanet * 16 + k] > 0.0f) {
+               balance = balance + prices[targetPlanet * 16 + k];
+               inventory[k] = inventory[k] - 1;
+            }
+            pressedAction = 1;
+            pressedIndex = k;
+            pressStartTime = Game_GetTime();
+            lastActionTime = pressStartTime;
+         }
+      }
+   }
+   if (pressedAction != -1 && Mouse_Down()) {
+      float currentTime = Game_GetTime();
+      if (currentTime - pressStartTime > 1.0f) {
+         if (currentTime - lastActionTime > 0.25f) {
+            if (pressedAction == 0) {
+               if (prices[targetPlanet * 16 + pressedIndex] > 0.0f && balance >= prices[targetPlanet * 16 + pressedIndex]) {
+                  balance = balance - prices[targetPlanet * 16 + pressedIndex];
+                  inventory[pressedIndex] = inventory[pressedIndex] + 1;
+               }
+            } else if (pressedAction == 1) {
+               if (inventory[pressedIndex] > 0 && prices[targetPlanet * 16 + pressedIndex] > 0.0f) {
+                  balance = balance + prices[targetPlanet * 16 + pressedIndex];
+                  inventory[pressedIndex] = inventory[pressedIndex] - 1;
+               }
+            }
+            lastActionTime = currentTime;
+         }
+      }
+   } else {
+      pressedAction = -1;
    }
    if (isMoving) {
       Vector3 direction = Vector3_Normalize(targetPosition - spaceshipPosition);
@@ -641,8 +710,7 @@ void Game_Update() {
    rotatedOffset = Vector3_RotateWithQuaternion(rightWindow3Offset, spaceshipOrientation);
    Primitive_SetLocation(rightWindow3, spaceshipPosition + rotatedOffset);
    Primitive_SetOrientation(rightWindow3, spaceshipOrientation);
-   currentLookAt = Vector3_Interpolate(currentLookAt, spaceshipPosition, 50.0f * deltaTime);
-   View_SetLookAtLocation(currentLookAt);
+   View_SetLookAtLocation(spaceshipPosition);
    Vector3 spaceshipPos = Primitive_GetLocation(mainBody);
    for(int i=0; i<9; i=i+1) {
       float distance = Vector3_Distance(spaceshipPos, planetPositions[i]);
@@ -674,9 +742,13 @@ void Game_Update() {
          Primitive_SetTextNumber(goodsTexts[k], 0, Float_Round(prices[targetPlanet * 16 + k]));
       }
       for(int k=0; k<16; k=k+1) {
-         float x = 0.75f;
+         float x_inventory = 0.75f;
+         float x_buy = 0.45f;
+         float x_sell = 0.25f;
          float y = 0.8f - (0.1f * (float)k);
-         Primitive_SetLocation(inventoryTexts[k], Vector3_Create(x, y, 0.0f));
+         Primitive_SetLocation(inventoryTexts[k], Vector3_Create(x_inventory, y, 0.0f));
+         Primitive_SetLocation(buyButtons[k], Vector3_Create(x_buy, y, 0.0f));
+         Primitive_SetLocation(sellButtons[k], Vector3_Create(x_sell, y, 0.0f));
          Primitive_SetTextNumber(inventoryTexts[k], 0, (float)inventory[k]);
       }
       Primitive_SetLocation(balanceText, Vector3_Create(0.0f, -0.9f, 0.0f));
@@ -692,6 +764,8 @@ void Game_Update() {
       for(int k=0; k<16; k=k+1) {
          Primitive_SetLocation(goodsTexts[k], Vector3_Create(0.0f, 0.0f, -1.0f));
          Primitive_SetLocation(inventoryTexts[k], Vector3_Create(0.0f, 0.0f, -1.0f));
+         Primitive_SetLocation(buyButtons[k], Vector3_Create(0.0f, 0.0f, -1.0f));
+         Primitive_SetLocation(sellButtons[k], Vector3_Create(0.0f, 0.0f, -1.0f));
       }
       Primitive_SetLocation(balanceText, Vector3_Create(0.0f, 0.0f, -1.0f));
       for(int i=0; i<9; i=i+1) {

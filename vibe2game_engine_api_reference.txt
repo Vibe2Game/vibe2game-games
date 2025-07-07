@@ -1,5 +1,5 @@
 
-/*Vibe2Game engine API reference v1.22*/
+/*Vibe2Game engine API reference v1.24*/
 
 /*Note: in this API reference, a '[primitive]' parameter can be any of the following types: Sphere, Box, Text*/
 
@@ -192,7 +192,7 @@ void View_SetTargetOrientation(Quaternion targetOrientation); /*Sets the orienta
 void View_SetTargetLocation(Vector3 targetLocation); /*Sets the location the camera will try to reach, for the view mode enabled with View_SetMode(0). This function is typically called at every game loop to make the camera follow the player-controlled actor (character, vehicle etc). See also View_SetTargetLocationOffset()*/
 void View_SetTargetLocationOffset(Vector3 targetLocationOffset); /*The actual location the camera will try to reach is the one set with View_SetTargetLocation() plus the offset set here. Note that this offset is also rotated about the base location with the orientation set with View_SetTargetOrientation()*/
 void View_SetLookAtLocation(Vector3 lookAtLocation); /*Sets the look-at location for the current view mode (see View_SetMode())*/
-void View_SetResponse(float viewAngularResponse,float viewLinearResponse); /*Response values = 1.0 make the camera track the subject (or reach it's intended position) immediately. Zero response means the camera will not move at all. Typical values are 1.0 for angular response and 0.9 for linear response*/
+void View_SetResponse(float viewAngularResponse,float viewLinearResponse); /*Used to make the view smoothly track/follow a moving look-at location (e.g. a moving subject). The smaller the response values, the smoother ('lazier') the view. Response values = 1.0 make the camera track the subject (or reach it's intended position) immediately. Zero response means the camera will not move at all. This setting is supported by all view modes (including mode 2)*/
 void View_SetLockCameraRoll(int lockCameraRoll); /*For the view mode enabled with View_SetMode(0), locking the camera roll is used to follow the player-controlled actor like in a typical 3rd person view game*/
 void View_SetZoomSensitivity(float zoomSensitivity); /*Sets the zoom control sensitivity for the view mode control enabled with View_SetMode(2). Default is 5.0. Setting it to zero disables the ability to the zoom the view*/
 Vector3 View_Project3DLocationToScreen(Vector3 location); /*Returns the screen coordinates (.x and .y component of the returned Vector3) of the specified world location. For reference, a returned value of [0.0,0.0,any-value] means screen center, [-1.0,-1.0,any-value] is the bottom-left corner, [1.0,1.0,any-value] is the top-right corner. The .z component of the returned Vector3 is the distance, from the camera, of the original 3d location, with negative values indicating that the 3d location is behind the camera*/
