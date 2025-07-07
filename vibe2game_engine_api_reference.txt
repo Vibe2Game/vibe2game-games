@@ -1,5 +1,5 @@
 
-/*Vibe2Game engine API reference v1.24*/
+/*Vibe2Game engine API reference v1.25*/
 
 /*Note: in this API reference, a '[primitive]' parameter can be any of the following types: Sphere, Box, Text*/
 
@@ -153,7 +153,7 @@ Text Primitive_CreateText([stringLiteral]); /*The Text primitive is rendered as 
 bool Primitive_IsText(Text text); /*Typically used to check if the primitive returned by functions like Clicked_GetPrimitive() is a valid Text primitive*/
 void Primitive_SetTextFont(Text text,int fontId); /*the 'fontId' supported values: 0=Arial,1=Arial Black,2=Brush Script MT,3=Comic Sans MS,4=Courier,5=Courier New,6=Garamond,7=Georgia,8=Gill Sans,9=Helvetica,10=Impact,11=Lucida Console,12=Monaco,13=Palatino,14=Tahoma,15=Times,16=Times New Roman,17=Trebuchet MS,18=Verdana*/
 void Primitive_SetTextWrapping(Text text,bool nowrap);
-void Primitive_SetTextSize(Text text,float width,float heigh); /*Size of the Text item box. A width of 2.0 corresponds to the full display width, a height of 2.0 corresponds to the full display height. For example, to make a text box cover the entire screen except a small margin on all sides, place it at [0,0] and set its size to [1.95,1.95]*/
+void Primitive_SetTextSize(Text text,float width,float heigh); /*Size of the Text item box. A width of 2.0 corresponds to the full display width, a height of 2.0 corresponds to the full display height. For example, to make a text box cover the entire screen except a small margin on all sides, place it at [0.0f,0.0f] and set its size to [1.95f,1.95f]. Another example: place a text box with a size of [0.4f,0.06f] at the top-left screen corner, place it at [-1.0f+0.4f*0.5f,1.0f-0.06f*0.5f]*/
 void Primitive_SetTextMargin(Text text,float widthMargint,float heightMargin); /*Sets the space between the text box borders and the text inside it*/
 void Primitive_SetTextColor(Text text,Color textColor);
 void Primitive_SetTextBackgroundColor(Text text,Color backgroundColor);
@@ -164,7 +164,7 @@ void Primitive_SetTextNumber(Text text,int valueId,float value); /*The 'valueId'
 void Primitive_SetInvisible([primitive] primitive,bool invisible); /*Invisible primitives are not rendered and are ignored for collision detection or ray checking*/
 void Primitive_SetOrientation([primitive] primitive,Quaternion orientation); /*For reference, when the camera has zero rotation, on screen a positive rotation about the Z (depth) axis is anti-clockwise, assuming the quaternion was created with Quaternion_CreateFromEulerAngles(0,0,angleInRadians,0) or with Quaternion_CreateFromAxisAngle(Vector3_Create(0.0f,0.0f,1.0f),angleInRadians)*/
 Quaternion Primitive_GetOrientation([primitive] primitive);
-void Primitive_SetLocation([primitive] primitive,Vector3 location); /*Sets the location of the primitive center*/
+void Primitive_SetLocation([primitive] primitive,Vector3 location); /*Sets the location of the primitive center. If the primitive is Text, see Primitive_SetTextSize() for placement examples*/
 Vector3 Primitive_GetLocation([primitive] primitive);
 void Primitive_SetMaterial(Box/Sphere primitive,Material material); /*For Text, see Primitive_SetTextColor() instead*/
 
