@@ -3,6 +3,8 @@ Sphere mySphere;
 Material sphereMaterial;
 Sphere pathSpheres[100];
 Material pathMaterial;
+float sphereSpeed;
+float accumulatedTime;
 void Game_Update() {
     if (Game_IsInitializing()) {
         int i;
@@ -11,8 +13,8 @@ void Game_Update() {
         for (i = 0; i < numUniquePoints + 1; i++) {
             float t = (float)(i % numUniquePoints) / (float)numUniquePoints;
             float angleRadians = t * 2.0f * PI;
-            float radiusVar = 10.0f * Float_Sin(4.0f * angleRadians);
-            float y = 5.0f * Float_Sin(6.0f * angleRadians);
+            float radiusVar = 50.0f * Float_Sin(4.0f * angleRadians);
+            float y = 10.0f * Float_Sin(6.0f * angleRadians);
             float x = (100.0f + radiusVar) * Float_Cos(angleRadians);
             float z = (100.0f + radiusVar) * Float_Sin(angleRadians);
             Vector3 pos = Vector3_Create(x, y, z);
@@ -30,7 +32,9 @@ void Game_Update() {
             Primitive_SetLocation(pathSpheres[i], pos);
         }
         mySphere = Primitive_CreateSphere();
-        Primitive_SetSphereRadius(mySphere, 1.0f);
+        Primitive_SetSphereRadius(mySphere, 2.0f);
+        Primitive_SetSphereShortening(mySphere, 0.2f);
+        Primitive_SetSphereFlattening(mySphere, 0.1f);
         sphereMaterial = Material_Create();
         Material_SetColor(sphereMaterial, Color_Create(1.0f, 0.0f, 0.0f, 1.0f));
         Material_SetGlossiness(sphereMaterial, 0.5f);
@@ -50,11 +54,20 @@ void Game_Update() {
         PointLight_SetLocation(light2, Vector3_Create(0.0f, -100.0f, 0.0f));
         PointLight_SetColor(light2, Color_Create(0.7f, 0.7f, 0.7f, 1.0f));
         PointLight_SetEmissivityRange(light2, 200.0f);
+        sphereSpeed = 0.0f;
+        accumulatedTime = 0.0f;
     }
-    float timeFraction = Game_GetTime() / 30.0f;
-    float splineTime = Float_Mod(timeFraction, 1.0f);
+    if (Mouse_Down()) {
+        sphereSpeed = sphereSpeed + (0.05f * Game_GetTick());
+        sphereSpeed = Float_Clamp(sphereSpeed, 0.0f, 0.033f);
+    } else {
+        sphereSpeed = sphereSpeed - (0.1f * Game_GetTick());
+        sphereSpeed = Float_Clamp(sphereSpeed, 0.0f, 0.033f);
+    }
+    accumulatedTime += sphereSpeed * Game_GetTick();
+    float splineTime = Float_Mod(accumulatedTime, 1.0f);
     Vector3 spherePos = Spline_GetLocationAtTime(mySpline, splineTime);
-    Quaternion orient = Spline_GetOrientationAtTime(mySpline, splineTime, 0.0f, 0.0f);
+    Quaternion orient = Spline_GetOrientationAtTime(mySpline, splineTime, 0.25f, 0.25f);
     Primitive_SetLocation(mySphere, spherePos);
     Primitive_SetOrientation(mySphere, orient);
     View_SetTargetLocation(spherePos);
