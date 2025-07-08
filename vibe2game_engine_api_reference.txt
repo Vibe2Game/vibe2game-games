@@ -1,5 +1,5 @@
 
-/*Vibe2Game engine API reference v1.31*/
+/*Vibe2Game engine API reference v1.32*/
 
 /*Note: in this API reference, a '[primitive]' parameter can be any of the following types: Sphere, Box, Text*/
 
@@ -135,6 +135,7 @@ bool Primitive_IsSphere(Sphere sphere); /*Typically used to check if the primiti
 void Primitive_SetSphereRadius(Sphere sphere,float radius);
 void Primitive_SetSphereShrinking(Sphere sphere,float shrinking); /*Between 0.0f and 1.0f (i.e. scale-down only). Sphere width (X dimension) scaling allows rendering of ellipsoids*/
 void Primitive_SetSphereFlattening(Sphere sphere,float flattening); /*Between 0.0f and 1.0f (i.e. scale-down only). Sphere height (Y dimension) scaling allows rendering of ellipsoids*/
+void Primitive_SetSphereShortening(Sphere sphere,float shortening); /*Between 0.0f and 1.0f (i.e. scale-down only). Sphere length (Z dimension) scaling allows rendering of ellipsoids*/
 
 Box Primitive_CreateBox(); /*Adds a box to the scene (returns a Box primitive). Setting the location of a Box means setting the location of the Box center. This is also the 'pivot' used when setting the Box orientation.*/
 bool Primitive_IsBox(Box box); /*Typically used to check if the primitive returned by functions like Clicked_GetPrimitive() is a valid Box primitive*/
@@ -198,10 +199,11 @@ void View_SetLockCameraRoll(int lockCameraRoll); /*For the view mode enabled wit
 void View_SetZoomSensitivity(float zoomSensitivity); /*Sets the zoom control sensitivity for the view mode control enabled with View_SetMode(2). Default is 5.0f. Setting it to zero disables the ability to the zoom the view*/
 Vector3 View_Project3DLocationToScreen(Vector3 location); /*Returns the screen coordinates (.x and .y component of the returned Vector3) of the specified world location. For reference, a returned value of [0.0f,0.0f,any-value] means screen center, [-1.0f,-1.0f,any-value] is the bottom-left corner, [1.0f,1.0f,any-value] is the top-right corner. The .z component of the returned Vector3 is the distance, from the camera, of the original 3d location, with negative values indicating that the 3d location is behind the camera*/
 
-Spline Spline_Create(int controlPointCount); /*A spline is a list of control points defining a path in space. The path is guaranteed to pass through all defined control points*/
+Spline Spline_Create(int controlPointCount); /*A spline is a list of control points defining a path in space. The path is guaranteed to pass through all defined control points. Increase the number of points if the movement of an object following the path is not sufficiently continuous*/
 void Spline_SetControlPointLocation(Spline,int controlPointId,Vector3 controlPointLocation); /*Sets the location of a Spline control point. Closed paths must have the first and last control points at exactly the same coordinates*/
 Vector3 Spline_GetControlPointLocation(Spline,int controlPointId); /*Returns the location of a Spline control point*/
 Vector3 Spline_GetLocationAtTime(Spline,float splineTime); /*Returns the location in space of the path at the specified 'time'. Time 0.0f is the beginning of the spline path. Time 1.0f is the end of the spline path. The Vector3 returned by this function is typically used to set the location of an object, to make it follow the Spline path*/
-Quaternion Spline_GetOrientationAtTime(Spline,float splineTime,float tiltFactor,float tiltSmoothness); /*Returns the orientation in space of the path at the specified 'time'. For example, when this orientation is applied to a [0.0f,0.0f,1.0f] Vector3 (using Vector3_RotateWithQuaternion()), the resulting vector indicates the local 'forward' direction of the path at the specified time. If 'tiltFactor' is zero, the path orientation will be such that the [0.0f,1.0f,0.0f] Vector3 will not be altered when the orientation is applied to it. If 'tiltFactor' is non-zero (typically around 0.35), the [0.0f,1.0f,0.0f] Vector3 will be 'tilted', about the local 'forward' direction, towards the inside of a path's curve, in a way similar to how a motorbike tilts on road bends. The 'tiltSmoothness' (typically around 0.5), can be increased if the tilt action is too abrupt, reduced if it's too slow. The Quaternion returned by this function is typically used to set the orientation of an object that follows the path*/
+Quaternion Spline_GetOrientationAtTime(Spline,float splineTime,float tiltFactor,float tiltSmoothness); /*Returns the orientation in space of the path at the specified 'time'. For example, when this orientation is applied to a [0.0f,0.0f,1.0f] Vector3 (using Vector3_RotateWithQuaternion()), the resulting vector indicates the local 'forward' direction of the path at the specified time. If 'tiltFactor' is non-zero (typically around 0.2), an object oriented using the returned Quaternion will be 'tilted' about the local 'forward' direction, towards the inside of a path's curve, in a way similar to how a motorbike tilts on road bends. The 'tiltSmoothness' (typically around 0.25) can be increased if the tilt action is too quick*/
+Vector3 Spline_GetCurvatureAtTime(Spline,float splineTime,float curvatureSmoothness); /*Returns a vector pointing towards the 'outside' of the path curvature at the specified 'time'. The length of the returned vector is proportional to the degree of curvature and the 'curvatureSmoothness' parameter. As a rule of thumb, a circular path with a radius of 100.0f would return a vector about 5.0f units long (assuming a 'curvatureSmoothness' of about 0.25).*/
 float Spline_GetLength(Spline); /*Returns the total length of a Spline*/
 
