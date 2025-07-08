@@ -1,6 +1,6 @@
 A collection of projects that can be directly run in the Vibe2Game.com engine by copy-pasting.
 
-These are meant to be used for AI-prompting (zero coding) game development. You can use them as a starting point to create your own games/demos by simply chatting with your favorite chatbot or AI assistant.
+These are meant to be used for AI-prompting-based (zero coding) game development. You can use them as a starting point to create your own games/demos by simply chatting with your favorite chatbot or AI assistant.
 
 Along with the .c source listing, a .png version of the same is also provided. These .png files are source code that can be loaded into the Vibe2Game engine with the 'LOAD' button (an alternative to copying/pasting the text-based source code).
 
