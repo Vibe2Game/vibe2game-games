@@ -26,3 +26,11 @@ Game templates
 ShapeAssault-vibe2game.c - basic elements of a rail shooter game
 
 MemoryGame-template-vibe2game.c - basic memory game
+
+
+--------------------
+Source code examples
+--------------------
+
+PathFollowing-SmoothFollowCamera-example-vibe2game.c - sample project demonstrating an actor following a spline-based path and a camera smoothly following the actor while taking it
+
