@@ -9,15 +9,19 @@ Along with the .c source listing, a .png version of the same is also provided. T
 Game projects
 -------------
 
-[![ShapeAssault](ShapeAssault-vibe2game.jpg)](https://vibe2game.com/engine.html?game=https://vibe2game.com/github/ShapeAssault-vibe2game.png)
+[![Shape Assault](ShapeAssault-vibe2game.jpg)](https://vibe2game.com/engine.html?game=https://vibe2game.com/github/ShapeAssault-vibe2game.png)
 
 ShapeAssault-vibe2game.c - latest version of a rail shooter game 
 
 
-[![StarTrader](StarTrader-vibe2game.jpg)](https://vibe2game.com/engine.html?game=https://vibe2game.com/github/StarTrader-vibe2game.png)
+[![Star Trader](StarTrader-vibe2game.jpg)](https://vibe2game.com/engine.html?game=https://vibe2game.com/github/StarTrader-vibe2game.png)
 
 StarTrader-vibe2game.c - latest version of a space game
 
+
+[![Vertigo Wing](VertigoWings-vibe2game.jpg)](https://vibe2game.com/engine.html?game=https://vibe2game.com/github/VertigoWings-vibe2game.png)
+
+VertigoWings-vibe2game.c - latest version of a stunt plane game
 
 --------------
 Game templates
