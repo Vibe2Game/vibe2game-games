@@ -1,5 +1,5 @@
 
-/*Vibe2Game engine API reference v1.32*/
+/*Vibe2Game engine API reference v1.36*/
 
 /*Note: in this API reference, a '[primitive]' parameter can be any of the following types: Sphere, Box, Text*/
 
@@ -117,7 +117,7 @@ Vector4 Vector4_Normalize(Vector4 v);
 Color Color_Create(float r,float g,float b,float a); /*Component values are in the 0.0f-1.0f range, 4 values in total, for red, green, blue and alpha*/
 Color Color_Interpolate(Color a,Color b,float interpolateionFactor);
 
-void AmbientLight_Set(Color color);
+void AmbientLight_Set(Color color); /*Example: AmbientLight_Set(Color_Create(0.1f, 0.1f, 0.1f, 1.0f))*/
 
 void Environment_SetGradient(Color horizonColor,Color gradientColor1,Color gradientColor2,Color zenithAndNadirColor,float gradientStop1,float gradientStop2);
 
@@ -199,8 +199,8 @@ void View_SetLockCameraRoll(int lockCameraRoll); /*For the view mode enabled wit
 void View_SetZoomSensitivity(float zoomSensitivity); /*Sets the zoom control sensitivity for the view mode control enabled with View_SetMode(2). Default is 5.0f. Setting it to zero disables the ability to the zoom the view*/
 Vector3 View_Project3DLocationToScreen(Vector3 location); /*Returns the screen coordinates (.x and .y component of the returned Vector3) of the specified world location. For reference, a returned value of [0.0f,0.0f,any-value] means screen center, [-1.0f,-1.0f,any-value] is the bottom-left corner, [1.0f,1.0f,any-value] is the top-right corner. The .z component of the returned Vector3 is the distance, from the camera, of the original 3d location, with negative values indicating that the 3d location is behind the camera*/
 
-Spline Spline_Create(int controlPointCount); /*A spline is a list of control points defining a path in space. The path is guaranteed to pass through all defined control points. Increase the number of points if the movement of an object following the path is not sufficiently continuous*/
-void Spline_SetControlPointLocation(Spline,int controlPointId,Vector3 controlPointLocation); /*Sets the location of a Spline control point. Closed paths must have the first and last control points at exactly the same coordinates*/
+Spline Spline_Create(int controlPointCount); /*A spline is a list of control points defining a path in space. The path is guaranteed to pass through all defined control points. The fewer the points, the better the performance*/
+void Spline_SetControlPointLocation(Spline,int controlPointId,Vector3 controlPointLocation); /*Sets the location of a Spline control point. Closed paths must have the first and last control points at exactly the same coordinates. Tip: use this function to reuse a spline if the only changes are control point locations*/
 Vector3 Spline_GetControlPointLocation(Spline,int controlPointId); /*Returns the location of a Spline control point*/
 Vector3 Spline_GetLocationAtTime(Spline,float splineTime); /*Returns the location in space of the path at the specified 'time'. Time 0.0f is the beginning of the spline path. Time 1.0f is the end of the spline path. The Vector3 returned by this function is typically used to set the location of an object, to make it follow the Spline path*/
 Quaternion Spline_GetOrientationAtTime(Spline,float splineTime,float tiltFactor,float tiltSmoothness); /*Returns the orientation in space of the path at the specified 'time'. For example, when this orientation is applied to a [0.0f,0.0f,1.0f] Vector3 (using Vector3_RotateWithQuaternion()), the resulting vector indicates the local 'forward' direction of the path at the specified time. If 'tiltFactor' is non-zero (typically around 0.2), an object oriented using the returned Quaternion will be 'tilted' about the local 'forward' direction, towards the inside of a path's curve, in a way similar to how a motorbike tilts on road bends. The 'tiltSmoothness' (typically around 0.25) can be increased if the tilt action is too quick*/
