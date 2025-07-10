@@ -1,7 +1,7 @@
 
-/*Vibe2Game engine API reference v1.36*/
+/*Vibe2Game engine API reference v1.37*/
 
-/*Note: in this API reference, a '[primitive]' parameter can be any of the following types: Sphere, Box, Text*/
+/*Note: in this API reference, a '[primitive]' parameter can be any of the following types: Sphere, Box, Cylinder, Text*/
 
 #define FLT_EPSILON 0.000001
 #define FLT_MAX 3.402823466e+38f
@@ -168,13 +168,13 @@ void Primitive_SetOrientation([primitive] primitive,Quaternion orientation); /*F
 Quaternion Primitive_GetOrientation([primitive] primitive);
 void Primitive_SetLocation([primitive] primitive,Vector3 location); /*Sets the location of the primitive center. If the primitive is Text, see Primitive_SetTextSize() for placement examples*/
 Vector3 Primitive_GetLocation([primitive] primitive);
-void Primitive_SetMaterial(Box/Sphere primitive,Material material); /*For Text, see Primitive_SetTextColor() instead*/
+void Primitive_SetMaterial([primitive] primitive,Material material); /*For Text, see Primitive_SetTextColor() instead*/
 
-int Clicked_GetPrimitive(); /*Gets the primitive (Sphere, Box, Cylinder) tapped/clicked by the user during the current game loop. An invalid id (-2) is returned if the mouse was not clicked or (-1) if it was clicked but no primitive was hit*/
-Vector3 Clicked_GetLocation(); /*Returns the tapped location on the surface of the primitive (Sphere, Box or Cylinder only) tapped/clicked during the current game loop. Note that the returned location is only valid if Clicked_GetPrimitive() returns a valid Sphere or Box identifier during the current game loop.*/
-Vector3 Clicked_GetNormal(); /*Returns the surface normal at the tapped location on the surface of the primitive (Sphere, Box or Cylinder only) tapped/clicked during the current game loop. Note that the returned normal is only valid if Clicked_GetPrimitive() returns a valid Sphere or Box identifier during the current game loop*/
+int Clicked_GetPrimitive(); /*Gets the primitive tapped/clicked by the user during the current game loop. An invalid id (-2) is returned if the mouse was not clicked or (-1) if it was clicked but no primitive was hit*/
+Vector3 Clicked_GetLocation(); /*Returns the tapped location on the surface of the primitive (except Text) tapped/clicked during the current game loop. Note that the returned location is only valid if Clicked_GetPrimitive() returns a valid primitive identifier during the current game loop.*/
+Vector3 Clicked_GetNormal(); /*Returns the surface normal at the tapped location on the surface of the primitive (except Text) tapped/clicked during the current game loop. Note that the returned normal is only valid if Clicked_GetPrimitive() returns a valid primitive identifier during the current game loop*/
 
-bool RayCheck(Vector3 rayFrom,Vector3 rayTo,[primitive] primitive); /*Returns true if the line segment between the 'rayFrom' and 'rayTo' locations intersects the specified primitive (Sphere, Box or Cylinder only)*/
+bool RayCheck(Vector3 rayFrom,Vector3 rayTo,[primitive] primitive); /*Returns true if the line segment between the 'rayFrom' and 'rayTo' locations intersects the specified primitive (except Text)*/
 Vector3 RayCheck_GetLocation(); /*If called right after RayCheck() (assuming RayCheck() returned true), returns the location the ray hit the primitive at*/
 Vector3 RayCheck_GetNormal(); /*If called right after RayCheck() (assuming RayCheck() returned true), returns the surface normal at the location the ray hit the primitive at*/
 
