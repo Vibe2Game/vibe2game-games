@@ -1,5 +1,5 @@
 
-/*Vibe2Game engine API reference v1.37*/
+/*Vibe2Game engine API reference v1.38*/
 
 /*Note: in this API reference, a '[primitive]' parameter can be any of the following types: Sphere, Box, Cylinder, Text*/
 
