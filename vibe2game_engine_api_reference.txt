@@ -1,5 +1,5 @@
 
-/*Vibe2Game engine API reference v1.38*/
+/*Vibe2Game engine API reference v1.39*/
 
 /*Note: in this API reference, a '[primitive]' parameter can be any of the following types: Sphere, Box, Cylinder, Text*/
 
@@ -68,7 +68,6 @@ float Float_Ceil(float f);
 float Float_Floor(float f);
 float Float_Trunc(float f);
 float Float_Round(float f);
-float Float_Mod(float x,float y); //may not be needed due to supported %
 float Float_Abs(float f);
 float Float_Max(float x,float y);
 float Float_Min(float x,float y);
