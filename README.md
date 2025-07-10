@@ -23,6 +23,12 @@ StarTrader-vibe2game.c - latest version of a space game
 
 VertigoWings-vibe2game.c - latest version of a stunt plane game
 
+
+[![Sliding Puzzle 3D](SlidingPuzzle3D-vibe2game.jpg)](https://vibe2game.com/engine.html?game=https://vibe2game.com/github/SlidingPuzzle3D-vibe2game.png)
+
+VertigoWings-vibe2game.c - latest version of a stunt plane game
+
+
 --------------
 Game templates
 --------------
