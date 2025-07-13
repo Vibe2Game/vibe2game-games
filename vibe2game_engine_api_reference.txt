@@ -1,7 +1,7 @@
 
-/*Vibe2Game engine API reference v1.39*/
+/*Vibe2Game engine API reference v1.45*/
 
-/*Note: in this API reference, a '[primitive]' parameter can be any of the following types: Triangle, Sphere, Box, Cylinder, Text*/
+/*Note: in this API reference, a '[primitive]' parameter can be any of the following types: Triangle, Sphere, Box, Cylinder, Text. The maximum supported number of primitives is 16384 (256 for Text primitive)*/
 
 #define FLT_EPSILON 0.000001
 #define FLT_MAX 3.402823466e+38f
@@ -121,16 +121,16 @@ void AmbientLight_Set(Color color); /*Example: AmbientLight_Set(Color_Create(0.1
 
 void Environment_SetGradient(Color horizonColor,Color gradientColor1,Color gradientColor2,Color zenithAndNadirColor,float gradientStop1,float gradientStop2);
 
-PointLight PointLight_Create(float visualProxyRadius); /*If 'visualProxyRadius' is > 0, an un-shaded sphere of the specified radius will be rendered to visualize where the light source is*/
+PointLight PointLight_Create(float visualProxyRadius); /*If 'visualProxyRadius' is > 0, an un-shaded sphere of the specified radius will be rendered to visualize where the light source is. The maximum supported number of lights is 32*/
 void PointLight_SetLocation(PointLight pointLight,Vector3 location);
 void PointLight_SetColor(PointLight pointLight,Color color); /*Light color is also typically used to set light intensity (the darker the color, the dimmer the light). Color components greater than one are supported, for overexposure-based effects, like bright flashes, extremely bright light sources etc*/
 void PointLight_SetEmissivityRange(PointLight pointLight,float emissivityRange); /*Emissivity range is the distance at which illumination becomes zero. Note that this is typically used to limit illumination to specific areas, rather than adjusting light intensity*/
 
-Material Material_Create();
+Material Material_Create(); /*The maximum supported number of materials is 16384*/
 Material_SetColor(Material material,Color color);
 Material_SetGlossiness(Material material,float glossiness); /*Use the following glossiness values as reference: 0.0f=toon-like-matte,0.01f=dull-rubber,0.025f=rubber,0.035f=dull-plastic,0.05f=matte-plastic,0.1f=common-plastic,0.25f=glossy-plastic,0.5f=polished-plastic,2.5f=painted-metal. Glossiness = -1.0f makes the material look un-shaded (can be used to fake glowing objects or distant lights, like stars, without using light sources)*/
 
-Triangle Primitive_CreateTriangle(); /*Adds a triangle to the scene (returns a Triangle primitive)*/
+Triangle Primitive_CreateTriangle(); /*Adds a triangle to the scene (returns a Triangle primitive). Triangles are double-faced*/
 bool Primitive_IsTriangle(Triangle triangle); /*Typically used to check if the primitive returned by functions like Clicked_GetPrimitive() is a valid Triangle primitive*/
 void Primitive_SetTriangleVertices(Triangle triangle,Vector3 vertex0,Vector3 vertex1,Vector3 vertex2); /*Locations are in triangle's local coordinates*/
 
